@@ -61,20 +61,23 @@ fora → Graphite Soft.
 
 Todas via `next/font/google` em `app/[locale]/layout.tsx`.
 
-### Crest
+### Logo / Crest
 
-Escudo com "5" onde o bojo inferior do número vira a bola (laranja). Duas
-variantes usadas no `design/fivea-identidade-visual.html`:
+**Padrão**: `design/fivea_logo.png` é o logo oficial (fonte da verdade
+raster). Escudo com "5" onde o bojo inferior do número vira a bola
+(laranja), já com fundo Ink Navy e cantos arredondados embutidos.
 
-1. **Completa** (assinatura/splash): contorno do escudo + "5" + bola + traço
-   pontilhado amarelo (rastro de movimento).
-2. **Ícone de app** (a que geramos em `public/icons/`): só fundo Ink Navy +
-   "5" + bola, sem contorno nem traço — mais legível em tamanho pequeno.
-
-Regenerar os ícones (192/512/512 maskable/apple-touch) a partir da lógica SVG
-do arquivo de identidade visual se o crest mudar; usa a fonte Big Shoulders
-Black via `sharp`/`librsvg` (precisa estar instalada no sistema para
-rasterizar o texto corretamente).
+- Cópia servida ao app: `public/brand/fivea-logo.png` (recompactada, mesmos
+  pixels). Use via `components/fivea/logo.tsx` (`<Logo />`) em vez de
+  importar a imagem direto.
+- Ícones de PWA/favicon (`public/icons/*.png`, `app/icon.png`,
+  `app/apple-icon.png`) são todos gerados por **resize simples** desse PNG
+  com `sharp` — não há mais rasterização de SVG/fonte envolvida. Se o logo
+  mudar, regenere os dois (`public/brand/fivea-logo.png` e todos os ícones)
+  a partir do novo `design/fivea_logo.png`.
+- `design/fivea-identidade-visual.html` ainda documenta a versão SVG/vetorial
+  do crest (paleta, tipografia, o conceito "5 com bola") mas não é mais usada
+  para gerar assets — o PNG é o padrão.
 
 ## Convenções de nomenclatura no banco (Supabase/Postgres)
 
