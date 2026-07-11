@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { Logo } from "@/components/fivea/logo";
 import { Button } from "@/components/ui/button";
 
@@ -25,6 +26,7 @@ export default function Home() {
         <Button
           size="lg"
           className="bg-whistle-orange text-chalk hover:bg-whistle-orange/90"
+          render={<Link href="/cadastro" />}
         >
           {t("cta")}
         </Button>

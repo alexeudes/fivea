@@ -103,6 +103,61 @@ RLS habilitado em todas as tabelas. Funções auxiliares (`is_membro_grupo`,
 `is_organizador_grupo`, etc.) centralizam a lógica de permissão usada nas
 policies — reusar essas funções em vez de duplicar a checagem.
 
+**Migrations depois da 001 (não editar 001, é append-only):**
+- `002_storage_avatars.sql` — bucket `avatars` (público, path
+  `avatars/{user_id}/arquivo`) + policies de storage.objects por dono.
+- `003_grants.sql` — `GRANT` explícito de `select/insert/update/delete` em
+  `public.*` para `authenticated`/`service_role`. Necessário porque
+  versões recentes do Supabase (CLI e projetos novos na nuvem) **não expõem
+  mais tabelas automaticamente** para PostgREST — sem isso toda query dá
+  `permission denied for table X` mesmo com RLS/policies corretas. Qualquer
+  tabela nova precisa desse grant (ou cair no `alter default privileges`
+  que a migration já configura pra `public`).
+
+## Supabase local (dev)
+
+CLI como devDependency (`npx supabase ...`, não precisa instalar global).
+Portas customizadas em `supabase/config.toml` (**54331–54339**, não as
+54321–54324 default) porque pode haver outro projeto Supabase local rodando
+na máquina — confira com `docker ps` antes de assumir as portas default.
+`[analytics]` desligado (o container `vector` fica `unhealthy` neste
+ambiente e não é necessário pra rodar auth/DB local).
+
+```bash
+npx supabase start        # sobe Postgres/Auth/Storage/Studio locais, aplica migrations
+npx supabase db reset      # recria o banco do zero e reaplica todas as migrations
+npx supabase stop
+```
+
+Se `docker` pedir permissão, rode os comandos acima prefixados com
+`sg docker -c "..."` em vez de mexer no grupo do usuário sem avisar.
+
+`.env.local` (gitignored) aponta pro Supabase local: `NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54331`
+e a `anon key` fixa que o `supabase start` imprime. Trocar pelos valores do
+projeto real quando ele existir.
+
+## Autenticação
+
+`proxy.ts` (raiz) combina duas responsabilidades num único arquivo, porque o
+Next.js só permite um proxy/middleware por app: (1) roteamento de locale via
+`next-intl` e (2) refresh de sessão Supabase + proteção de rotas. Rotas
+públicas (sem locale prefix) ficam na constante `PUBLIC_PATHS` em `proxy.ts`
+(`/`, `/login`, `/cadastro`) — qualquer rota fora dessa lista exige sessão,
+senão redireciona pra `/login?next=<rota>`. Como `(auth)` e `(app)` são route
+groups, eles não aparecem na URL — é por isso que a checagem é por
+allowlist de paths, não por prefixo.
+
+Fluxo: cadastro (`/cadastro`, só email/senha) → trigger `handle_new_user` já
+cria a linha em `perfis` (com `nome` provisório = parte local do email) →
+redireciona pra `/perfil/completar` (nome, perna, posição, foto) →
+`/inicio`. Login direto vai pra `/inicio` (ou pro `next` da URL).
+
+Server actions ficam em `lib/supabase/actions.ts` (signUp/signIn/signOut) e
+`lib/supabase/perfil-actions.ts` (completarPerfil) — todas recebem `locale`
+como primeiro argumento via `.bind(null, locale)` no client component, pra
+poder montar o redirect com o prefixo de locale certo sem depender do
+contexto de navegação do next-intl dentro de uma Server Action.
+
 ## Estrutura de pastas
 
 ```

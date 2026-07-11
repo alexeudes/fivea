@@ -4,5 +4,45 @@
     "title": "Pickup football, organized.",
     "subtitle": "Schedule five-a-side matches, confirm attendance, and draft teams — all in one place.",
     "cta": "Start my group"
+  },
+  "Auth": {
+    "cadastroTitle": "Create account",
+    "cadastroDescription": "Sign up to organize or join a match.",
+    "cadastroCta": "Create account",
+    "cadastroFooter": "Already have an account?",
+    "loginTitle": "Sign in",
+    "loginDescription": "Sign in with your email and password.",
+    "loginCta": "Sign in",
+    "loginFooter": "Don't have an account yet?",
+    "email": "Email",
+    "password": "Password",
+    "passwordHint": "At least 6 characters.",
+    "loginLink": "Sign in",
+    "cadastroLink": "Create account"
+  },
+  "Perfil": {
+    "completarTitle": "Complete your profile",
+    "completarDescription": "Just this left before you're on the pitch.",
+    "nome": "Name",
+    "perna": "Foot",
+    "pernaDestro": "Right-footed",
+    "pernaCanhoto": "Left-footed",
+    "pernaAmbidestro": "Both-footed",
+    "posicaoPreferida": "Preferred position",
+    "posicaoGoleiro": "Goalkeeper",
+    "posicaoZagueiro": "Center-back",
+    "posicaoLateral": "Full-back",
+    "posicaoVolante": "Defensive midfielder",
+    "posicaoMeia": "Midfielder",
+    "posicaoAtacante": "Forward",
+    "foto": "Photo (optional)",
+    "salvar": "Save and continue",
+    "enviandoFoto": "Uploading photo..."
+  },
+  "App": {
+    "sair": "Sign out",
+    "inicioEmConstrucao": "Logged-in area — under construction",
+    "editarPerfil": "Edit profile",
+    "ola": "Hi, {nome}"
   }
 }

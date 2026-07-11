@@ -4,5 +4,45 @@
     "title": "Sua pelada, organizada.",
     "subtitle": "Agende peladas de futebol e futsal, confirme presença e sorteie os times — tudo em um só lugar.",
     "cta": "Criar minha pelada"
+  },
+  "Auth": {
+    "cadastroTitle": "Criar conta",
+    "cadastroDescription": "Cadastre-se para organizar ou entrar numa pelada.",
+    "cadastroCta": "Criar conta",
+    "cadastroFooter": "Já tem conta?",
+    "loginTitle": "Entrar",
+    "loginDescription": "Entre com seu email e senha.",
+    "loginCta": "Entrar",
+    "loginFooter": "Ainda não tem conta?",
+    "email": "Email",
+    "password": "Senha",
+    "passwordHint": "Mínimo de 6 caracteres.",
+    "loginLink": "Entrar",
+    "cadastroLink": "Criar conta"
+  },
+  "Perfil": {
+    "completarTitle": "Complete seu perfil",
+    "completarDescription": "Só falta isso pra você entrar em campo.",
+    "nome": "Nome",
+    "perna": "Perna",
+    "pernaDestro": "Destro",
+    "pernaCanhoto": "Canhoto",
+    "pernaAmbidestro": "Ambidestro",
+    "posicaoPreferida": "Posição preferida",
+    "posicaoGoleiro": "Goleiro",
+    "posicaoZagueiro": "Zagueiro",
+    "posicaoLateral": "Lateral",
+    "posicaoVolante": "Volante",
+    "posicaoMeia": "Meia",
+    "posicaoAtacante": "Atacante",
+    "foto": "Foto (opcional)",
+    "salvar": "Salvar e continuar",
+    "enviandoFoto": "Enviando foto..."
+  },
+  "App": {
+    "sair": "Sair",
+    "inicioEmConstrucao": "Área logada — em construção",
+    "editarPerfil": "Editar perfil",
+    "ola": "Olá, {nome}"
   }
 }

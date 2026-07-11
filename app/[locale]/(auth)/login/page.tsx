@@ -1,9 +1,14 @@
-export default function LoginPage() {
-  return (
-    <main className="flex flex-1 items-center justify-center bg-ink-navy p-6 text-chalk">
-      <p className="font-mono text-sm text-graphite-soft">
-        Login — em construção
-      </p>
-    </main>
-  );
+import { LoginForm } from "./login-form";
+
+export default async function LoginPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ next?: string }>;
+}) {
+  const { locale } = await params;
+  const { next } = await searchParams;
+
+  return <LoginForm locale={locale} next={next ?? "/inicio"} />;
 }
