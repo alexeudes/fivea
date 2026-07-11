@@ -1,0 +1,14 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "fivea",
+	"main": ".open-next/worker.js",
+	"compatibility_date": "2026-07-11",
+	"compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+	"assets": {
+		"directory": ".open-next/assets",
+		"binding": "ASSETS"
+	}
+	// ponytail: no R2 incremental cache / images binding yet — add before first
+	// production deploy (needs `wrangler r2 bucket create fivea-opennext-cache`).
+	// See https://opennext.js.org/cloudflare/caching
+}

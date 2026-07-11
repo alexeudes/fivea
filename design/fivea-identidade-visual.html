@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fivea — Identidade Visual</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders:wght@500;700;900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink-navy:#0E1B2A;
+    --ink-navy-2:#132639;
+    --chalk:#F5F6F2;
+    --whistle-orange:#FF5A2E;
+    --court-blue:#1E5AA8;
+    --cone-yellow:#FFC93C;
+    --graphite:#2B333B;
+    --graphite-soft:#5B6672;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--chalk);
+    color:var(--graphite);
+    font-family:'IBM Plex Sans', sans-serif;
+    line-height:1.5;
+  }
+  .display{ font-family:'Big Shoulders', sans-serif; font-weight:900; text-transform:uppercase; letter-spacing:0.01em; }
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+
+  section{ padding:72px 24px; max-width:1040px; margin:0 auto; }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--whistle-orange);
+    margin-bottom:14px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .eyebrow::before{ content:''; width:22px; height:2px; background:var(--whistle-orange); display:inline-block; }
+
+  /* HERO */
+  .hero{
+    background:var(--ink-navy);
+    color:var(--chalk);
+    padding:100px 24px 90px;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero-inner{ max-width:1040px; margin:0 auto; position:relative; z-index:2; }
+  .hero .eyebrow{ color:var(--cone-yellow); }
+  .hero .eyebrow::before{ background:var(--cone-yellow); }
+  .wordmark{
+    font-size:clamp(64px, 13vw, 148px);
+    line-height:0.85;
+    display:flex;
+    align-items:center;
+    gap:0.02em;
+  }
+  .wordmark .five{ color:var(--chalk); }
+  .wordmark .a{ color:var(--whistle-orange); }
+  .hero-tagline{
+    margin-top:28px;
+    max-width:520px;
+    font-size:18px;
+    color:#C7D0DA;
+  }
+  .hero-tagline .pt{ color:var(--chalk); font-weight:500; }
+  .arc-line{
+    position:absolute;
+    right:-120px; bottom:-160px;
+    width:520px; height:520px;
+    border:2px solid rgba(245,246,242,0.08);
+    border-radius:50%;
+  }
+  .arc-line.b{ right:-40px; bottom:-260px; width:640px; height:640px; border-color:rgba(255,90,46,0.15); }
+
+  /* LOGO SECTION */
+  .logo-grid{
+    display:grid;
+    grid-template-columns:1.2fr 1fr;
+    gap:48px;
+    margin-top:40px;
+    align-items:center;
+  }
+  @media (max-width:720px){ .logo-grid{ grid-template-columns:1fr; } }
+
+  .crest-stage{
+    background:var(--ink-navy);
+    border-radius:20px;
+    padding:60px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .crest-stage.light{ background:var(--chalk); border:1px solid #E3E1D9; }
+
+  .signature-copy h3{
+    font-family:'Big Shoulders', sans-serif;
+    font-weight:700;
+    font-size:26px;
+    text-transform:uppercase;
+    margin-bottom:12px;
+  }
+  .signature-copy p{ color:var(--graphite-soft); font-size:15px; margin-bottom:14px; }
+  .signature-copy strong{ color:var(--graphite); }
+
+  /* app icon grid */
+  .icon-row{
+    display:flex; gap:16px; flex-wrap:wrap;
+    margin-top:36px;
+  }
+  .icon-tile{
+    background:var(--ink-navy);
+    border-radius:22%;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 8px 20px rgba(14,27,42,0.15);
+  }
+
+  /* COLOR PALETTE */
+  .palette-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:16px;
+    margin-top:36px;
+  }
+  @media (max-width:720px){ .palette-grid{ grid-template-columns:repeat(2, 1fr); } }
+  .swatch{
+    border-radius:14px;
+    overflow:hidden;
+    border:1px solid rgba(43,51,59,0.08);
+  }
+  .swatch-color{ height:100px; }
+  .swatch-info{ padding:14px 16px; background:#fff; }
+  .swatch-name{ font-weight:600; font-size:14px; margin-bottom:2px; }
+  .swatch-hex{ font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--graphite-soft); }
+  .swatch-use{ font-size:12px; color:var(--graphite-soft); margin-top:6px; }
+
+  /* TYPE SPECIMEN */
+  .type-block{ margin-top:44px; padding-top:36px; border-top:1px solid rgba(43,51,59,0.1); }
+  .type-label{ font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--graphite-soft); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:10px;}
+  .display-sample{ font-size:clamp(40px,7vw,72px); line-height:0.95; }
+  .numerals-sample{ font-size:clamp(36px,6vw,60px); color:var(--court-blue); letter-spacing:0.04em; }
+  .body-sample{ font-size:16px; max-width:640px; color:var(--graphite); }
+  .body-sample.en{ color:var(--graphite-soft); }
+  .mono-sample{
+    font-family:'IBM Plex Mono', monospace;
+    background:var(--ink-navy);
+    color:var(--cone-yellow);
+    display:inline-block;
+    padding:16px 22px;
+    border-radius:10px;
+    font-size:20px;
+    margin-top:6px;
+  }
+
+  /* STATUS CHIPS DEMO */
+  .chip-row{ display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; }
+  .chip{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    padding:8px 14px;
+    border-radius:999px;
+    font-weight:500;
+  }
+  .chip.confirmado{ background:rgba(30,90,168,0.1); color:var(--court-blue); }
+  .chip.duvida{ background:rgba(255,201,60,0.18); color:#8a6a00; }
+  .chip.fora{ background:rgba(43,51,59,0.08); color:var(--graphite-soft); }
+  .chip.pendente{ background:rgba(255,90,46,0.12); color:var(--whistle-orange); }
+
+  footer{ text-align:center; padding:50px 24px; color:var(--graphite-soft); font-size:13px; }
+</style>
+</head>
+<body>
+
+  <div class="hero">
+    <div class="arc-line"></div>
+    <div class="arc-line b"></div>
+    <div class="hero-inner">
+      <div class="eyebrow">Identidade Visual — v1</div>
+      <div class="wordmark display"><span class="five">FIV</span><span class="a">E</span><span class="five">A</span></div>
+      <p class="hero-tagline">
+        <span class="pt">Marque. Confirme. Jogue.</span><br>
+        Pickup football, organized. Built for five-a-side.
+      </p>
+    </div>
+  </div>
+
+  <section>
+    <div class="eyebrow">Assinatura</div>
+    <div class="logo-grid">
+      <div class="crest-stage">
+        <svg width="220" height="220" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
+          <path d="M110 10 L204 46 V120 C204 168 163 202 110 214 C57 202 16 168 16 120 V46 Z"
+                fill="none" stroke="#FF5A2E" stroke-width="3"/>
+          <text x="50%" y="63%" text-anchor="middle" font-family="Big Shoulders" font-weight="900"
+                font-size="150" fill="#F5F6F2">5</text>
+          <circle cx="97" cy="132" r="19" fill="#FF5A2E"/>
+          <circle cx="97" cy="132" r="19" fill="none" stroke="#0E1B2A" stroke-width="1.5"/>
+          <path d="M50 168 Q110 190 170 168" fill="none" stroke="#FFC93C" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 10"/>
+        </svg>
+      </div>
+      <div class="signature-copy">
+        <h3>O crest do 5-com-bola</h3>
+        <p>A marca nasce do próprio nome: <strong>Fivea = five-a-side</strong>. O bojo inferior do número 5 vira a bola — o time sempre "dentro" do número. O formato de escudo remete a patch de camisa/clube, dando senso de pertencimento ao grupo da pelada, não só a um app utilitário.</p>
+        <p>A linha pontilhada amarela por baixo é o rastro de movimento — usada com moderação em splash screens e estados de carregamento (a bola "rola" até a posição).</p>
+      </div>
+    </div>
+
+    <div class="icon-row">
+      <svg class="icon-tile" width="72" height="72" viewBox="0 0 220 220"><text x="50%" y="63%" text-anchor="middle" font-family="Big Shoulders" font-weight="900" font-size="150" fill="#F5F6F2">5</text><circle cx="97" cy="132" r="19" fill="#FF5A2E"/></svg>
+      <svg class="icon-tile" width="56" height="56" viewBox="0 0 220 220"><text x="50%" y="63%" text-anchor="middle" font-family="Big Shoulders" font-weight="900" font-size="150" fill="#F5F6F2">5</text><circle cx="97" cy="132" r="19" fill="#FF5A2E"/></svg>
+      <svg class="icon-tile" width="40" height="40" viewBox="0 0 220 220"><text x="50%" y="63%" text-anchor="middle" font-family="Big Shoulders" font-weight="900" font-size="150" fill="#F5F6F2">5</text><circle cx="97" cy="132" r="19" fill="#FF5A2E"/></svg>
+      <svg class="icon-tile" width="28" height="28" viewBox="0 0 220 220"><text x="50%" y="63%" text-anchor="middle" font-family="Big Shoulders" font-weight="900" font-size="150" fill="#F5F6F2">5</text><circle cx="97" cy="132" r="19" fill="#FF5A2E"/></svg>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow">Paleta</div>
+    <div class="palette-grid">
+      <div class="swatch">
+        <div class="swatch-color" style="background:var(--ink-navy)"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Ink Navy</div>
+          <div class="swatch-hex">#0E1B2A</div>
+          <div class="swatch-use">Fundo primário, camisa visitante, noite de jogo</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:var(--chalk); border-bottom:1px solid #eee"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Chalk</div>
+          <div class="swatch-hex">#F5F6F2</div>
+          <div class="swatch-use">Fundo claro, linha de giz da quadra</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:var(--whistle-orange)"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Whistle Orange</div>
+          <div class="swatch-hex">#FF5A2E</div>
+          <div class="swatch-use">Ação primária, CTA, cone de treino</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:var(--court-blue)"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Court Blue</div>
+          <div class="swatch-hex">#1E5AA8</div>
+          <div class="swatch-use">Confirmado, links, piso de quadra society</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:var(--cone-yellow)"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Cone Yellow</div>
+          <div class="swatch-hex">#FFC93C</div>
+          <div class="swatch-use">Status de dúvida/pendência, atenção</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:var(--graphite)"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Graphite</div>
+          <div class="swatch-hex">#2B333B</div>
+          <div class="swatch-use">Texto neutro, bordas em fundo claro</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="eyebrow" style="margin-top:44px;">Status de presença aplicado</div>
+    <div class="chip-row">
+      <span class="chip confirmado">Confirmado</span>
+      <span class="chip duvida">Dúvida</span>
+      <span class="chip fora">Fora</span>
+      <span class="chip pendente">Pgto pendente</span>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow">Tipografia</div>
+
+    <div class="type-block">
+      <div class="type-label">Display — Big Shoulders 900 · headlines, wordmark, placar</div>
+      <div class="display-sample">Sorteio de Times</div>
+      <div class="numerals-sample mono display" style="font-family:'Big Shoulders'; font-weight:900;">0123456789</div>
+    </div>
+
+    <div class="type-block">
+      <div class="type-label">Corpo — IBM Plex Sans · legibilidade internacional (pt/en)</div>
+      <p class="body-sample">Confirme sua presença até sexta-feira às 18h para garantir sua vaga na pelada de sábado.</p>
+      <p class="body-sample en">Confirm your spot by Friday 6pm to lock in Saturday's five-a-side match.</p>
+    </div>
+
+    <div class="type-block">
+      <div class="type-label">Mono — IBM Plex Mono · placar, cronômetro, dados</div>
+      <div class="mono-sample">SÁB · 18:00 — TIME A 4 × 2 TIME B</div>
+    </div>
+  </section>
+
+  <footer>Fivea — Identidade Visual v1 · Direção esportiva/internacional</footer>
+
+</body>
+</html>
