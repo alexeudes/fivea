@@ -119,6 +119,10 @@ policies — reusar essas funções em vez de duplicar a checagem.
   membro (a policy de select só cobre membros). Entrar no grupo = insert
   direto em `membros_grupo` (a policy `membros_insert` já permite
   `usuario_id = auth.uid()`).
+- `005_notificacoes.sql` — tabela `notificacoes` (in-app; push real fica pro
+  milestone de PWA). Select/update/delete só do próprio usuário; insert só
+  por organizador do grupo (`is_organizador_grupo`). Toast lido/exibido pelo
+  layout de `(app)` via `components/fivea/notificacoes-toast.tsx`.
 
 **Gotcha de RLS + RETURNING:** `insert(...).select(...)` (RETURNING) avalia
 a policy de *select* dentro do próprio INSERT, e funções `stable` como

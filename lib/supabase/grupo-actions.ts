@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { proximasSessoes } from "@/lib/sessoes";
 
 export type GrupoActionState = { error?: string } | undefined;
 
@@ -48,6 +49,23 @@ export async function criarGrupo(
     .insert({ ...grupo, id, organizador_id: user.id });
 
   if (error) return { error: error.message };
+
+  // Grupo recorrente já nasce com as próximas 4 sessões agendadas.
+  // (Sem notificação aqui: o grupo acabou de ser criado, ainda não tem membros.)
+  if (grupo.frequencia !== "sem_frequencia" && grupo.dia_semana != null && grupo.horario) {
+    await supabase.from("sessoes_pelada").insert(
+      proximasSessoes(
+        grupo.dia_semana,
+        grupo.horario,
+        grupo.frequencia as "semanal" | "quinzenal",
+      ).map((data) => ({
+        grupo_id: id,
+        data_hora: data.toISOString(),
+        local: grupo.local,
+      })),
+    );
+  }
+
   redirect(`/${locale}/grupos/${id}`);
 }
 

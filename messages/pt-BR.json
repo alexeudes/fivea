@@ -97,5 +97,25 @@
     "jaMembro": "Você já está neste grupo.",
     "irParaGrupo": "Ir para o grupo",
     "voltar": "Voltar"
+  },
+  "Sessoes": {
+    "proximas": "Próximas sessões",
+    "nenhumaSessao": "Nenhuma sessão agendada.",
+    "novaSessao": "Nova sessão",
+    "data": "Data",
+    "horario": "Horário",
+    "local": "Local",
+    "criar": "Criar sessão",
+    "presencas": "Presenças",
+    "confirmados": "{count} confirmados",
+    "suaPresenca": "Sua presença",
+    "statusFora": "Fora",
+    "statusDuvida": "Dúvida",
+    "statusConfirmado": "Confirmado",
+    "statusConfirmadoPendentePagamento": "Pagamento pendente",
+    "statusSemResposta": "Sem resposta",
+    "notificacaoNovaSessao": "Nova pelada marcada em {grupo}",
+    "ver": "Ver",
+    "fechar": "Fechar"
   }
 }

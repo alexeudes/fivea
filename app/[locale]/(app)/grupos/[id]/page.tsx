@@ -23,6 +23,7 @@ export default async function GrupoDetalhesPage({
 }) {
   const { locale, id } = await params;
   const t = await getTranslations("Grupos");
+  const tSessoes = await getTranslations("Sessoes");
   const supabase = await createClient();
 
   const {
@@ -53,6 +54,23 @@ export default async function GrupoDetalhesPage({
     >();
 
   const souOrganizador = user?.id === grupo.organizador_id;
+
+  const { data: sessoes } = await supabase
+    .from("sessoes_pelada")
+    .select("id, data_hora, local, status")
+    .eq("grupo_id", id)
+    .eq("status", "agendada")
+    .gte("data_hora", new Date().toISOString())
+    .order("data_hora")
+    .limit(6);
+
+  const formataData = new Intl.DateTimeFormat(locale, {
+    weekday: "short",
+    day: "2-digit",
+    month: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
   const pessoas = [
     {
@@ -104,6 +122,48 @@ export default async function GrupoDetalhesPage({
         <CardContent className="flex items-center justify-between gap-4">
           <code className="font-mono text-sm">{grupo.codigo_convite}</code>
           <CopiarLinkButton locale={locale} codigo={grupo.codigo_convite} />
+        </CardContent>
+      </Card>
+
+      <Card className="mb-6">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="font-heading uppercase">{tSessoes("proximas")}</CardTitle>
+            {souOrganizador && (
+              <Button
+                variant="outline"
+                size="sm"
+                nativeButton={false}
+                render={<Link href={`/grupos/${id}/sessoes/nova`} />}
+              >
+                {tSessoes("novaSessao")}
+              </Button>
+            )}
+          </div>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-2">
+          {!sessoes?.length ? (
+            <p className="text-sm text-graphite-soft dark:text-chalk/60">
+              {tSessoes("nenhumaSessao")}
+            </p>
+          ) : (
+            sessoes.map((sessao) => (
+              <Link
+                key={sessao.id}
+                href={`/sessoes/${sessao.id}`}
+                className="flex items-center justify-between rounded-lg border p-3 transition-colors hover:border-court-blue"
+              >
+                <span className="font-mono text-sm">
+                  {formataData.format(new Date(sessao.data_hora))}
+                </span>
+                {sessao.local && (
+                  <span className="text-xs text-graphite-soft dark:text-chalk/60">
+                    {sessao.local}
+                  </span>
+                )}
+              </Link>
+            ))
+          )}
         </CardContent>
       </Card>
 

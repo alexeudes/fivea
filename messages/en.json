@@ -97,5 +97,25 @@
     "jaMembro": "You're already in this group.",
     "irParaGrupo": "Go to group",
     "voltar": "Back"
+  },
+  "Sessoes": {
+    "proximas": "Upcoming matches",
+    "nenhumaSessao": "No matches scheduled.",
+    "novaSessao": "New match",
+    "data": "Date",
+    "horario": "Time",
+    "local": "Venue",
+    "criar": "Create match",
+    "presencas": "Attendance",
+    "confirmados": "{count} confirmed",
+    "suaPresenca": "Your status",
+    "statusFora": "Out",
+    "statusDuvida": "Maybe",
+    "statusConfirmado": "Confirmed",
+    "statusConfirmadoPendentePagamento": "Payment pending",
+    "statusSemResposta": "No answer",
+    "notificacaoNovaSessao": "New match scheduled in {grupo}",
+    "ver": "View",
+    "fechar": "Dismiss"
   }
 }
