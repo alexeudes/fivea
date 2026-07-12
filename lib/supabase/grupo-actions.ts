@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { proximasSessoes } from "@/lib/sessoes";
 
 export type GrupoActionState = { error?: string } | undefined;
@@ -123,6 +124,19 @@ export async function entrarNoGrupo(
       tipo_pagamento: tipoPagamento,
     });
     if (error) return { error: error.message };
+
+    // Mensalista ganha o registro de assinatura — escrita só via
+    // service_role (RLS de assinaturas não tem policy de insert, por
+    // design). A cobrança da mensalidade é iniciada pelo próprio usuário
+    // na tela do grupo (ver PENDENCIAS.md: SDK do AbacatePay ainda não
+    // tem assinatura recorrente de verdade).
+    if (tipoPagamento === "mensalista") {
+      const admin = createAdminClient();
+      await admin.from("assinaturas").insert({
+        grupo_id: grupo.id,
+        usuario_id: user.id,
+      });
+    }
   }
   redirect(`/${locale}/grupos/${grupo.id}`);
 }

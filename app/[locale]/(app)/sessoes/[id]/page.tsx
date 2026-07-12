@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
+import { PagarPix } from "@/components/fivea/pagar-pix";
 import { SortearForm } from "./sortear-form";
 import { TimesBoard, type Time } from "./times-board";
 
@@ -43,7 +44,7 @@ export default async function SessaoPage({
   const { data: sessao } = await supabase
     .from("sessoes_pelada")
     .select(
-      "*, grupo:grupos_pelada(id, nome, organizador_id, organizador:perfis!organizador_id(id, nome, avatar_url)), goleiro:goleiros_avulsos(id, nome)",
+      "*, grupo:grupos_pelada(id, nome, organizador_id, valor_diaria, organizador:perfis!organizador_id(id, nome, avatar_url)), goleiro:goleiros_avulsos(id, nome)",
     )
     .eq("id", id)
     .single();
@@ -112,6 +113,28 @@ export default async function SessaoPage({
   const meuStatus = user ? statusPor.get(user.id) : undefined;
   const tGoleiros = await getTranslations("Goleiros");
   const tTimes = await getTranslations("Times");
+  const tPagamentos = await getTranslations("Pagamentos");
+
+  // cobrança pendente já gerada (pra reaproveitar o copia-e-cola)
+  const { data: meuPagamentoPendente } =
+    user && meuStatus === "confirmado_pendente_pagamento"
+      ? await supabase
+          .from("pagamentos")
+          .select("qr_code")
+          .eq("sessao_id", id)
+          .eq("usuario_id", user.id)
+          .eq("status", "pendente")
+          .order("criado_em", { ascending: false })
+          .limit(1)
+          .maybeSingle()
+      : { data: null };
+
+  const valorDiaria =
+    sessao.grupo.valor_diaria != null
+      ? new Intl.NumberFormat(locale, { style: "currency", currency: "BRL" }).format(
+          Number(sessao.grupo.valor_diaria),
+        )
+      : null;
   const dataFormatada = new Intl.DateTimeFormat(locale, {
     dateStyle: "full",
     timeStyle: "short",
@@ -161,6 +184,26 @@ export default async function SessaoPage({
           </form>
         </CardContent>
       </Card>
+
+      {meuStatus === "confirmado_pendente_pagamento" && (
+        <Card className="mb-6 border-whistle-orange/50">
+          <CardHeader>
+            <CardTitle className="font-heading uppercase">{tPagamentos("titulo")}</CardTitle>
+            {valorDiaria && (
+              <p className="font-mono text-xs text-graphite-soft dark:text-chalk/60">
+                {tPagamentos("valorDiaria", { valor: valorDiaria })}
+              </p>
+            )}
+          </CardHeader>
+          <CardContent>
+            <PagarPix
+              payload={{ sessao_id: id }}
+              brCodeInicial={meuPagamentoPendente?.qr_code ?? null}
+              label={tPagamentos("pagarPix")}
+            />
+          </CardContent>
+        </Card>
+      )}
 
       <Card className="mb-6">
         <CardHeader>

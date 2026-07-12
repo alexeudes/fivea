@@ -144,5 +144,23 @@
     "capitaoAleatorio": "Capitão aleatório",
     "semCapitao": "Sem capitão",
     "moverDica": "Arraste um jogador pra outro time (ou toque nele e depois no time de destino)."
+  },
+  "Pagamentos": {
+    "titulo": "Pagamento",
+    "pagarPix": "Pagar via Pix",
+    "valorDiaria": "Diária: {valor}",
+    "gerando": "Gerando cobrança...",
+    "copiaECola": "Pix copia-e-cola",
+    "copiar": "Copiar código",
+    "copiado": "Copiado!",
+    "aposPagar": "Depois de pagar, o status atualiza aqui.",
+    "atualizarStatus": "Atualizar status",
+    "assinatura": "Assinatura",
+    "mensalidade": "Mensalidade: {valor}",
+    "assinaturaAtiva": "Ativa",
+    "assinaturaInadimplente": "Inadimplente",
+    "assinaturaCancelada": "Cancelada",
+    "pagarMensalidade": "Pagar mensalidade via Pix",
+    "erro": "Não foi possível gerar a cobrança."
   }
 }

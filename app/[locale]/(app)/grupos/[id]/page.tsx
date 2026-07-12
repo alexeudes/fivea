@@ -14,6 +14,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ConfirmButton } from "@/components/fivea/confirm-button";
+import { PagarPix } from "@/components/fivea/pagar-pix";
 import { CopiarLinkButton } from "./copiar-link-button";
 
 export default async function GrupoDetalhesPage({
@@ -72,6 +73,40 @@ export default async function GrupoDetalhesPage({
     minute: "2-digit",
   });
 
+  // assinatura do usuário logado neste grupo (só mensalista tem)
+  const { data: minhaAssinatura } = user
+    ? await supabase
+        .from("assinaturas")
+        .select("id, status")
+        .eq("grupo_id", id)
+        .eq("usuario_id", user.id)
+        .maybeSingle()
+    : { data: null };
+
+  const { data: pagamentoAssinaturaPendente } = minhaAssinatura
+    ? await supabase
+        .from("pagamentos")
+        .select("qr_code")
+        .eq("assinatura_id", minhaAssinatura.id)
+        .eq("status", "pendente")
+        .order("criado_em", { ascending: false })
+        .limit(1)
+        .maybeSingle()
+    : { data: null };
+
+  const tPagamentos = await getTranslations("Pagamentos");
+  const valorMensalidade =
+    grupo.valor_mensalidade != null
+      ? new Intl.NumberFormat(locale, { style: "currency", currency: "BRL" }).format(
+          Number(grupo.valor_mensalidade),
+        )
+      : null;
+  const statusAssinaturaLabel = {
+    ativa: tPagamentos("assinaturaAtiva"),
+    inadimplente: tPagamentos("assinaturaInadimplente"),
+    cancelada: tPagamentos("assinaturaCancelada"),
+  } as const;
+
   const pessoas = [
     {
       usuarioId: grupo.organizador.id,
@@ -124,6 +159,43 @@ export default async function GrupoDetalhesPage({
           <CopiarLinkButton locale={locale} codigo={grupo.codigo_convite} />
         </CardContent>
       </Card>
+
+      {minhaAssinatura && (
+        <Card className="mb-6">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="font-heading uppercase">
+                {tPagamentos("assinatura")}
+              </CardTitle>
+              <Badge
+                className={
+                  minhaAssinatura.status === "ativa"
+                    ? "bg-court-blue text-chalk"
+                    : "bg-whistle-orange text-chalk"
+                }
+              >
+                {statusAssinaturaLabel[
+                  minhaAssinatura.status as keyof typeof statusAssinaturaLabel
+                ] ?? minhaAssinatura.status}
+              </Badge>
+            </div>
+            {valorMensalidade && (
+              <p className="font-mono text-xs text-graphite-soft dark:text-chalk/60">
+                {tPagamentos("mensalidade", { valor: valorMensalidade })}
+              </p>
+            )}
+          </CardHeader>
+          {valorMensalidade && (
+            <CardContent>
+              <PagarPix
+                payload={{ assinatura_id: minhaAssinatura.id }}
+                brCodeInicial={pagamentoAssinaturaPendente?.qr_code ?? null}
+                label={tPagamentos("pagarMensalidade")}
+              />
+            </CardContent>
+          )}
+        </Card>
+      )}
 
       <Card className="mb-6">
         <CardHeader>

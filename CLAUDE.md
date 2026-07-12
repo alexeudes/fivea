@@ -13,9 +13,17 @@ internacional (pt-BR / en).
 - **Deploy**: Cloudflare Workers via `@opennextjs/cloudflare` — **não Vercel**.
   Config em `wrangler.jsonc` / `open-next.config.ts`. `nodejs_compat` ligado,
   sem Edge Runtime do Next (as rotas rodam no worker via OpenNext).
-- **Pagamentos**: AbacatePay (Pix, cartão, assinaturas recorrentes) via
-  `abacatepay-nodejs-sdk`, chamado só de código server-side
-  (`lib/abacatepay/client.ts`)
+- **Pagamentos**: AbacatePay via **REST v2 direto** (`api.abacatepay.com/v2`,
+  Checkout Transparente PIX) — o SDK npm oficial (1.6) aponta pra v1 morta e
+  rejeita chaves novas ("API key version mismatch"), então foi removido.
+  Wrapper em `lib/abacatepay/client.ts` (server-only; mock em memória quando
+  `ABACATEPAY_API_KEY` está vazia). Cobrança criada em
+  `app/api/pagamentos/criar`, confirmação em `app/api/webhooks/abacatepay`
+  (secret na query + trust-but-verify via `check()` na API); escrita em
+  `pagamentos`/`assinaturas` só via service_role
+  (`lib/supabase/admin.ts`). Doc viva: docs.abacatepay.com/llms.txt.
+  Detalhes e o que falta (assinatura v2 de verdade, cartão, HMAC do webhook)
+  em `PENDENCIAS.md` (local, gitignored).
 - **i18n**: next-intl, locales `pt-BR` (default) e `en`, roteamento por
   `app/[locale]/...`
 - **PWA**: `public/manifest.json` + `public/sw.js` (passthrough, sem cache

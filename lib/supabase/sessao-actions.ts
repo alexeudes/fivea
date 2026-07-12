@@ -12,7 +12,7 @@ export type SessaoActionState = { error?: string } | undefined;
 const STATUS_RSVP = ["fora", "duvida", "confirmado"] as const;
 
 export async function marcarPresenca(sessaoId: string, formData: FormData) {
-  const status = String(formData.get("status"));
+  let status = String(formData.get("status"));
   if (!STATUS_RSVP.includes(status as (typeof STATUS_RSVP)[number])) return;
 
   const supabase = await createClient();
@@ -20,6 +20,39 @@ export async function marcarPresenca(sessaoId: string, formData: FormData) {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return;
+
+  // Diarista confirmando num grupo com diária cobrada entra como
+  // "confirmado_pendente_pagamento" — o webhook do AbacatePay destrava
+  // pra "confirmado" quando o Pix é pago. Quem já pagou esta sessão
+  // confirma direto.
+  if (status === "confirmado") {
+    const { data: sessao } = await supabase
+      .from("sessoes_pelada")
+      .select("grupo_id, grupo:grupos_pelada(valor_diaria)")
+      .eq("id", sessaoId)
+      .returns<{ grupo_id: string; grupo: { valor_diaria: number | null } }[]>()
+      .single();
+    const { data: membro } = sessao
+      ? await supabase
+          .from("membros_grupo")
+          .select("tipo_pagamento")
+          .eq("grupo_id", sessao.grupo_id)
+          .eq("usuario_id", user.id)
+          .maybeSingle()
+      : { data: null };
+
+    if (membro?.tipo_pagamento === "diarista" && Number(sessao?.grupo.valor_diaria) > 0) {
+      const { data: pago } = await supabase
+        .from("pagamentos")
+        .select("id")
+        .eq("sessao_id", sessaoId)
+        .eq("usuario_id", user.id)
+        .eq("status", "pago")
+        .limit(1)
+        .maybeSingle();
+      if (!pago) status = "confirmado_pendente_pagamento";
+    }
+  }
 
   await supabase.from("presencas").upsert(
     {

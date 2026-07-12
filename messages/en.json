@@ -144,5 +144,23 @@
     "capitaoAleatorio": "Random captain",
     "semCapitao": "No captain",
     "moverDica": "Drag a player to another team (or tap them, then tap the target team)."
+  },
+  "Pagamentos": {
+    "titulo": "Payment",
+    "pagarPix": "Pay with Pix",
+    "valorDiaria": "Match fee: {valor}",
+    "gerando": "Creating charge...",
+    "copiaECola": "Pix copy-and-paste code",
+    "copiar": "Copy code",
+    "copiado": "Copied!",
+    "aposPagar": "After paying, the status updates here.",
+    "atualizarStatus": "Refresh status",
+    "assinatura": "Subscription",
+    "mensalidade": "Monthly fee: {valor}",
+    "assinaturaAtiva": "Active",
+    "assinaturaInadimplente": "Overdue",
+    "assinaturaCancelada": "Canceled",
+    "pagarMensalidade": "Pay monthly fee with Pix",
+    "erro": "Could not create the charge."
   }
 }
