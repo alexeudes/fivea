@@ -10,6 +10,13 @@ const bigShoulders = Big_Shoulders({
   variable: "--font-big-shoulders",
   weight: ["500", "700", "900"],
   subsets: ["latin"],
+  // ponytail: Next's bundled font-metrics table has no entry for the merged
+  // "Big Shoulders" variable family (only stale pre-merge Display/Text
+  // keys), so automatic fallback-override generation fails. This is the
+  // documented way to opt out, though Turbopack in this Next version still
+  // logs the warning before checking the flag — cosmetic build noise, safe
+  // to ignore; font itself loads and renders fine.
+  adjustFontFallback: false,
 });
 
 const ibmPlexSans = IBM_Plex_Sans({
