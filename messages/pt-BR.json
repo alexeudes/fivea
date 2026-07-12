@@ -117,5 +117,32 @@
     "notificacaoNovaSessao": "Nova pelada marcada em {grupo}",
     "ver": "Ver",
     "fechar": "Fechar"
+  },
+  "Goleiros": {
+    "titulo": "Goleiros avulsos",
+    "descricao": "Pool de goleiros pra alugar em qualquer pelada.",
+    "nome": "Nome",
+    "telefone": "Telefone",
+    "valorPadrao": "Valor padrão (R$)",
+    "adicionar": "Adicionar goleiro",
+    "nenhum": "Nenhum goleiro no pool ainda.",
+    "excluir": "Excluir",
+    "confirmarExclusao": "Excluir {nome} do pool?",
+    "goleiroDaSessao": "Goleiro avulso",
+    "semGoleiro": "Sem goleiro avulso.",
+    "vincular": "Vincular",
+    "gerenciarPool": "Gerenciar pool"
+  },
+  "Times": {
+    "titulo": "Times",
+    "sortear": "Sortear times",
+    "reSortear": "Re-sortear",
+    "numTimes": "Número de times",
+    "aindaNaoSorteado": "Times ainda não sorteados.",
+    "confirmadosInsuficientes": "Não há confirmados suficientes pra esse número de times.",
+    "capitao": "Capitão",
+    "capitaoAleatorio": "Capitão aleatório",
+    "semCapitao": "Sem capitão",
+    "moverDica": "Arraste um jogador pra outro time (ou toque nele e depois no time de destino)."
   }
 }

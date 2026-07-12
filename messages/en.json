@@ -117,5 +117,32 @@
     "notificacaoNovaSessao": "New match scheduled in {grupo}",
     "ver": "View",
     "fechar": "Dismiss"
+  },
+  "Goleiros": {
+    "titulo": "Guest goalkeepers",
+    "descricao": "Pool of goalkeepers for hire in any match.",
+    "nome": "Name",
+    "telefone": "Phone",
+    "valorPadrao": "Default fee",
+    "adicionar": "Add goalkeeper",
+    "nenhum": "No goalkeepers in the pool yet.",
+    "excluir": "Delete",
+    "confirmarExclusao": "Remove {nome} from the pool?",
+    "goleiroDaSessao": "Guest goalkeeper",
+    "semGoleiro": "No guest goalkeeper.",
+    "vincular": "Assign",
+    "gerenciarPool": "Manage pool"
+  },
+  "Times": {
+    "titulo": "Teams",
+    "sortear": "Draw teams",
+    "reSortear": "Redraw",
+    "numTimes": "Number of teams",
+    "aindaNaoSorteado": "Teams not drawn yet.",
+    "confirmadosInsuficientes": "Not enough confirmed players for that many teams.",
+    "capitao": "Captain",
+    "capitaoAleatorio": "Random captain",
+    "semCapitao": "No captain",
+    "moverDica": "Drag a player to another team (or tap them, then tap the target team)."
   }
 }

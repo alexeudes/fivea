@@ -2,11 +2,15 @@ import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { marcarPresenca } from "@/lib/supabase/sessao-actions";
+import { vincularGoleiro } from "@/lib/supabase/goleiro-actions";
 import { Link } from "@/i18n/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
+import { SortearForm } from "./sortear-form";
+import { TimesBoard, type Time } from "./times-board";
 
 // Chips de presença conforme a identidade visual (CLAUDE.md)
 const CHIP: Record<string, string> = {
@@ -39,25 +43,51 @@ export default async function SessaoPage({
   const { data: sessao } = await supabase
     .from("sessoes_pelada")
     .select(
-      "*, grupo:grupos_pelada(id, nome, organizador_id, organizador:perfis!organizador_id(id, nome, avatar_url))",
+      "*, grupo:grupos_pelada(id, nome, organizador_id, organizador:perfis!organizador_id(id, nome, avatar_url)), goleiro:goleiros_avulsos(id, nome)",
     )
     .eq("id", id)
     .single();
 
   if (!sessao) notFound();
 
-  const [{ data: membros }, { data: presencas }] = await Promise.all([
-    supabase
-      .from("membros_grupo")
-      .select("usuario_id, perfil:perfis(nome, avatar_url)")
-      .eq("grupo_id", sessao.grupo.id)
-      .eq("ativo", true)
-      .order("entrou_em")
-      .returns<
-        { usuario_id: string; perfil: { nome: string; avatar_url: string | null } }[]
-      >(),
-    supabase.from("presencas").select("usuario_id, status").eq("sessao_id", id),
-  ]);
+  const souOrganizador = user?.id === sessao.grupo.organizador_id;
+
+  const [{ data: membros }, { data: presencas }, { data: timesRaw }, { data: pool }] =
+    await Promise.all([
+      supabase
+        .from("membros_grupo")
+        .select("usuario_id, perfil:perfis(nome, avatar_url)")
+        .eq("grupo_id", sessao.grupo.id)
+        .eq("ativo", true)
+        .order("entrou_em")
+        .returns<
+          { usuario_id: string; perfil: { nome: string; avatar_url: string | null } }[]
+        >(),
+      supabase.from("presencas").select("usuario_id, status").eq("sessao_id", id),
+      supabase
+        .from("times_sorteio")
+        .select("id, nome, capitao_id, jogadores:times_jogadores(usuario_id, perfil:perfis(nome))")
+        .eq("sessao_id", id)
+        .order("nome")
+        .returns<
+          {
+            id: string;
+            nome: string;
+            capitao_id: string | null;
+            jogadores: { usuario_id: string; perfil: { nome: string } }[];
+          }[]
+        >(),
+      souOrganizador
+        ? supabase.from("goleiros_avulsos").select("id, nome").order("nome")
+        : Promise.resolve({ data: null }),
+    ]);
+
+  const times: Time[] = (timesRaw ?? []).map((time) => ({
+    id: time.id,
+    nome: time.nome,
+    capitaoId: time.capitao_id,
+    jogadores: time.jogadores.map((j) => ({ usuarioId: j.usuario_id, nome: j.perfil.nome })),
+  }));
 
   const statusPor = new Map(presencas?.map((p) => [p.usuario_id, p.status]));
 
@@ -80,6 +110,8 @@ export default async function SessaoPage({
   ).length;
 
   const meuStatus = user ? statusPor.get(user.id) : undefined;
+  const tGoleiros = await getTranslations("Goleiros");
+  const tTimes = await getTranslations("Times");
   const dataFormatada = new Intl.DateTimeFormat(locale, {
     dateStyle: "full",
     timeStyle: "short",
@@ -127,6 +159,61 @@ export default async function SessaoPage({
               </Button>
             ))}
           </form>
+        </CardContent>
+      </Card>
+
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle className="font-heading uppercase">{tGoleiros("goleiroDaSessao")}</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-3">
+          <p className="text-sm">{sessao.goleiro?.nome ?? tGoleiros("semGoleiro")}</p>
+          {souOrganizador && (
+            <>
+              <form action={vincularGoleiro.bind(null, id)} className="flex items-center gap-2">
+                <NativeSelect
+                  name="goleiro_id"
+                  defaultValue={sessao.goleiro?.id ?? ""}
+                  className="flex-1"
+                  aria-label={tGoleiros("goleiroDaSessao")}
+                >
+                  <NativeSelectOption value="">{tGoleiros("semGoleiro")}</NativeSelectOption>
+                  {pool?.map((goleiro) => (
+                    <NativeSelectOption key={goleiro.id} value={goleiro.id}>
+                      {goleiro.nome}
+                    </NativeSelectOption>
+                  ))}
+                </NativeSelect>
+                <Button type="submit" variant="outline" size="sm">
+                  {tGoleiros("vincular")}
+                </Button>
+              </form>
+              <Link
+                href="/goleiros"
+                className="font-mono text-xs text-court-blue underline underline-offset-4"
+              >
+                {tGoleiros("gerenciarPool")}
+              </Link>
+            </>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle className="font-heading uppercase">{tTimes("titulo")}</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-4">
+          {souOrganizador && <SortearForm sessaoId={id} jaSorteado={times.length > 0} />}
+          {times.length > 0 ? (
+            <TimesBoard times={times} souOrganizador={souOrganizador} />
+          ) : (
+            !souOrganizador && (
+              <p className="text-sm text-graphite-soft dark:text-chalk/60">
+                {tTimes("aindaNaoSorteado")}
+              </p>
+            )
+          )}
         </CardContent>
       </Card>
 
