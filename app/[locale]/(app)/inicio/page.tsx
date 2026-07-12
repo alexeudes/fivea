@@ -25,6 +25,9 @@ export default async function InicioPage({
       <p className="font-mono text-sm text-graphite-soft">
         {perfil?.nome ? t("ola", { nome: perfil.nome }) : t("inicioEmConstrucao")}
       </p>
+      <Link href="/grupos" className="text-sm text-court-blue underline underline-offset-4">
+        {t("meusGrupos")}
+      </Link>
       <Link href="/perfil/completar" className="text-sm text-court-blue underline underline-offset-4">
         {t("editarPerfil")}
       </Link>

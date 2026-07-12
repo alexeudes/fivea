@@ -113,6 +113,20 @@ policies — reusar essas funções em vez de duplicar a checagem.
   `permission denied for table X` mesmo com RLS/policies corretas. Qualquer
   tabela nova precisa desse grant (ou cair no `alter default privileges`
   que a migration já configura pra `public`).
+- `004_convites_grupo.sql` — coluna `codigo_convite` (8 hex chars, unique,
+  default aleatório) em `grupos_pelada` + função `grupo_por_codigo(text)`
+  (security definer) que retorna a prévia de um grupo pra quem ainda não é
+  membro (a policy de select só cobre membros). Entrar no grupo = insert
+  direto em `membros_grupo` (a policy `membros_insert` já permite
+  `usuario_id = auth.uid()`).
+
+**Gotcha de RLS + RETURNING:** `insert(...).select(...)` (RETURNING) avalia
+a policy de *select* dentro do próprio INSERT, e funções `stable` como
+`is_membro_grupo` não enxergam a linha recém-inserida no snapshot do
+statement — o insert falha com "new row violates row-level security policy"
+mesmo com policies corretas. Solução usada: gerar o `id` no app
+(`crypto.randomUUID()`) e inserir sem RETURNING (ver `criarGrupo` em
+`lib/supabase/grupo-actions.ts`).
 
 ## Supabase local (dev)
 

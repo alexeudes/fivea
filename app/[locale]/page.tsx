@@ -26,7 +26,7 @@ export default function Home() {
         <Button
           size="lg"
           className="bg-whistle-orange text-chalk hover:bg-whistle-orange/90"
-          render={<Link href="/cadastro" />}
+          nativeButton={false} render={<Link href="/cadastro" />}
         >
           {t("cta")}
         </Button>
