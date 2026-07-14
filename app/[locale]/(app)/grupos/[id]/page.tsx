@@ -14,6 +14,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ConfirmButton } from "@/components/fivea/confirm-button";
+import { MediaAvaliacao } from "@/components/fivea/media-avaliacao";
 import { PagarPix } from "@/components/fivea/pagar-pix";
 import { CopiarLinkButton } from "./copiar-link-button";
 
@@ -56,14 +57,23 @@ export default async function GrupoDetalhesPage({
 
   const souOrganizador = user?.id === grupo.organizador_id;
 
-  const { data: sessoes } = await supabase
-    .from("sessoes_pelada")
-    .select("id, data_hora, local, status")
-    .eq("grupo_id", id)
-    .eq("status", "agendada")
-    .gte("data_hora", new Date().toISOString())
-    .order("data_hora")
-    .limit(6);
+  const [{ data: sessoes }, { data: realizadas }] = await Promise.all([
+    supabase
+      .from("sessoes_pelada")
+      .select("id, data_hora, local, status")
+      .eq("grupo_id", id)
+      .eq("status", "agendada")
+      .gte("data_hora", new Date().toISOString())
+      .order("data_hora")
+      .limit(6),
+    supabase
+      .from("sessoes_pelada")
+      .select("id, data_hora, local")
+      .eq("grupo_id", id)
+      .eq("status", "realizada")
+      .order("data_hora", { ascending: false })
+      .limit(3),
+  ]);
 
   const formataData = new Intl.DateTimeFormat(locale, {
     weekday: "short",
@@ -123,6 +133,22 @@ export default async function GrupoDetalhesPage({
         papel: m.tipo_pagamento,
       })),
   ];
+
+  // média agregada via media_avaliacao_jogador() — notas individuais nunca saem do banco
+  const tAvaliacoes = await getTranslations("Avaliacoes");
+  const medias = new Map(
+    await Promise.all(
+      pessoas.map(async (p) => {
+        const { data } = await supabase.rpc("media_avaliacao_jogador", {
+          p_usuario_id: p.usuarioId,
+        });
+        return [
+          p.usuarioId,
+          data?.[0]?.media != null ? Number(data[0].media) : null,
+        ] as const;
+      }),
+    ),
+  );
 
   const badgeClasses = {
     organizador: "bg-whistle-orange text-chalk",
@@ -236,6 +262,27 @@ export default async function GrupoDetalhesPage({
               </Link>
             ))
           )}
+          {(realizadas?.length ?? 0) > 0 && (
+            <>
+              <p className="mt-2 font-mono text-xs uppercase text-graphite-soft dark:text-chalk/60">
+                {tSessoes("realizadasRecentes")}
+              </p>
+              {realizadas!.map((sessao) => (
+                <Link
+                  key={sessao.id}
+                  href={`/sessoes/${sessao.id}`}
+                  className="flex items-center justify-between rounded-lg border p-3 transition-colors hover:border-court-blue"
+                >
+                  <span className="font-mono text-sm">
+                    {formataData.format(new Date(sessao.data_hora))}
+                  </span>
+                  <Badge className="bg-court-blue text-chalk">
+                    {tSessoes("statusRealizada")}
+                  </Badge>
+                </Link>
+              ))}
+            </>
+          )}
         </CardContent>
       </Card>
 
@@ -253,6 +300,12 @@ export default async function GrupoDetalhesPage({
                 <AvatarFallback>{pessoa.nome.slice(0, 2).toUpperCase()}</AvatarFallback>
               </Avatar>
               <span className="flex-1 text-sm font-medium">{pessoa.nome}</span>
+              <MediaAvaliacao
+                media={medias.get(pessoa.usuarioId) ?? null}
+                label={tAvaliacoes("media", {
+                  media: (medias.get(pessoa.usuarioId) ?? 0).toFixed(1),
+                })}
+              />
               <Badge className={badgeClasses[pessoa.papel]}>{t(pessoa.papel)}</Badge>
               {souOrganizador && pessoa.papel !== "organizador" && (
                 <ConfirmButton

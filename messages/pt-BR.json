@@ -116,7 +116,11 @@
     "statusSemResposta": "Sem resposta",
     "notificacaoNovaSessao": "Nova pelada marcada em {grupo}",
     "ver": "Ver",
-    "fechar": "Fechar"
+    "fechar": "Fechar",
+    "statusRealizada": "Realizada",
+    "marcarRealizada": "Marcar como realizada",
+    "confirmarRealizada": "Marcar esta pelada como realizada? Isso libera as avaliações e encerra o RSVP.",
+    "realizadasRecentes": "Últimas realizadas"
   },
   "Goleiros": {
     "titulo": "Goleiros avulsos",
@@ -162,5 +166,11 @@
     "assinaturaCancelada": "Cancelada",
     "pagarMensalidade": "Pagar mensalidade via Pix",
     "erro": "Não foi possível gerar a cobrança."
+  },
+  "Avaliacoes": {
+    "titulo": "Avaliar jogadores",
+    "descricao": "Dê uma nota de 1 a 5 pra quem jogou com você. Só você vê as notas que deu.",
+    "notaAria": "Dar nota {nota} para {nome}",
+    "media": "Média {media} de 5"
   }
 }

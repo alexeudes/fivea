@@ -116,7 +116,11 @@
     "statusSemResposta": "No answer",
     "notificacaoNovaSessao": "New match scheduled in {grupo}",
     "ver": "View",
-    "fechar": "Dismiss"
+    "fechar": "Dismiss",
+    "statusRealizada": "Played",
+    "marcarRealizada": "Mark as played",
+    "confirmarRealizada": "Mark this match as played? This opens player ratings and closes RSVP.",
+    "realizadasRecentes": "Recently played"
   },
   "Goleiros": {
     "titulo": "Guest goalkeepers",
@@ -162,5 +166,11 @@
     "assinaturaCancelada": "Canceled",
     "pagarMensalidade": "Pay monthly fee with Pix",
     "erro": "Could not create the charge."
+  },
+  "Avaliacoes": {
+    "titulo": "Rate players",
+    "descricao": "Rate whoever played with you from 1 to 5. Only you can see the ratings you gave.",
+    "notaAria": "Rate {nome} {nota} out of 5",
+    "media": "Average {media} out of 5"
   }
 }

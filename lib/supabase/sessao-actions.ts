@@ -124,6 +124,57 @@ export async function criarSessao(
   redirect(`/${locale}/sessoes/${id}`);
 }
 
+export async function marcarRealizada(sessaoId: string) {
+  const supabase = await createClient();
+  // a policy sessoes_update_organizador garante que só o organizador consegue
+  await supabase
+    .from("sessoes_pelada")
+    .update({ status: "realizada" })
+    .eq("id", sessaoId)
+    .eq("status", "agendada");
+  revalidatePath("/", "layout");
+}
+
+const CONFIRMADOS = ["confirmado", "confirmado_pendente_pagamento"];
+
+export async function avaliarJogador(
+  sessaoId: string,
+  avaliadoId: string,
+  formData: FormData,
+) {
+  const nota = Number(formData.get("nota"));
+  if (!Number.isInteger(nota) || nota < 1 || nota > 5) return;
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user || avaliadoId === user.id) return;
+
+  // só depois da pelada, e só entre quem estava confirmado — membership do
+  // grupo, avaliador = auth.uid() e não-autoavaliação já são RLS/constraint
+  const { data: sessao } = await supabase
+    .from("sessoes_pelada")
+    .select("status")
+    .eq("id", sessaoId)
+    .single();
+  if (sessao?.status !== "realizada") return;
+
+  const { data: presencas } = await supabase
+    .from("presencas")
+    .select("usuario_id")
+    .eq("sessao_id", sessaoId)
+    .in("status", CONFIRMADOS)
+    .in("usuario_id", [user.id, avaliadoId]);
+  if (presencas?.length !== 2) return;
+
+  await supabase.from("avaliacoes").upsert(
+    { sessao_id: sessaoId, avaliado_id: avaliadoId, avaliador_id: user.id, nota },
+    { onConflict: "sessao_id,avaliado_id,avaliador_id" },
+  );
+  revalidatePath("/", "layout");
+}
+
 export async function marcarNotificacaoLida(id: string) {
   const supabase = await createClient();
   await supabase.from("notificacoes").update({ lida: true }).eq("id", id);

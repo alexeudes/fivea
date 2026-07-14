@@ -1,14 +1,25 @@
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
-import { marcarPresenca } from "@/lib/supabase/sessao-actions";
+import {
+  marcarPresenca,
+  marcarRealizada,
+  avaliarJogador,
+} from "@/lib/supabase/sessao-actions";
 import { vincularGoleiro } from "@/lib/supabase/goleiro-actions";
 import { Link } from "@/i18n/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
+import { ConfirmButton } from "@/components/fivea/confirm-button";
 import { PagarPix } from "@/components/fivea/pagar-pix";
 import { SortearForm } from "./sortear-form";
 import { TimesBoard, type Time } from "./times-board";
@@ -53,8 +64,13 @@ export default async function SessaoPage({
 
   const souOrganizador = user?.id === sessao.grupo.organizador_id;
 
-  const [{ data: membros }, { data: presencas }, { data: timesRaw }, { data: pool }] =
-    await Promise.all([
+  const [
+    { data: membros },
+    { data: presencas },
+    { data: timesRaw },
+    { data: pool },
+    { data: minhasAvaliacoes },
+  ] = await Promise.all([
       supabase
         .from("membros_grupo")
         .select("usuario_id, perfil:perfis(nome, avatar_url)")
@@ -81,6 +97,13 @@ export default async function SessaoPage({
       souOrganizador
         ? supabase.from("goleiros_avulsos").select("id, nome").order("nome")
         : Promise.resolve({ data: null }),
+      user
+        ? supabase
+            .from("avaliacoes")
+            .select("avaliado_id, nota")
+            .eq("sessao_id", id)
+            .eq("avaliador_id", user.id)
+        : Promise.resolve({ data: null }),
     ]);
 
   const times: Time[] = (timesRaw ?? []).map((time) => ({
@@ -104,16 +127,27 @@ export default async function SessaoPage({
       })),
   ];
 
-  const confirmados = pessoas.filter((p) =>
+  const estaConfirmado = (usuarioId: string) =>
     ["confirmado", "confirmado_pendente_pagamento"].includes(
-      statusPor.get(p.usuarioId) ?? "",
-    ),
-  ).length;
+      statusPor.get(usuarioId) ?? "",
+    );
+  const confirmados = pessoas.filter((p) => estaConfirmado(p.usuarioId)).length;
 
   const meuStatus = user ? statusPor.get(user.id) : undefined;
+  const realizada = sessao.status === "realizada";
+  // confirmado avalia os outros confirmados depois da pelada
+  const avaliaveis =
+    realizada && user && estaConfirmado(user.id)
+      ? pessoas.filter((p) => p.usuarioId !== user.id && estaConfirmado(p.usuarioId))
+      : [];
+  const minhaNotaPor = new Map(
+    minhasAvaliacoes?.map((a) => [a.avaliado_id, a.nota]) ?? [],
+  );
+
   const tGoleiros = await getTranslations("Goleiros");
   const tTimes = await getTranslations("Times");
   const tPagamentos = await getTranslations("Pagamentos");
+  const tAvaliacoes = await getTranslations("Avaliacoes");
 
   // cobrança pendente já gerada (pra reaproveitar o copia-e-cola)
   const { data: meuPagamentoPendente } =
@@ -155,35 +189,98 @@ export default async function SessaoPage({
         >
           {sessao.grupo.nome}
         </Link>
-        <h1 className="font-heading text-3xl uppercase">{dataFormatada}</h1>
+        <div className="flex items-center gap-3">
+          <h1 className="font-heading text-3xl uppercase">{dataFormatada}</h1>
+          {realizada && (
+            <Badge className="bg-court-blue text-chalk">{t("statusRealizada")}</Badge>
+          )}
+        </div>
         {sessao.local && (
           <p className="font-mono text-xs text-graphite-soft dark:text-chalk/60">
             {sessao.local}
           </p>
         )}
+        {souOrganizador && sessao.status === "agendada" && (
+          <div className="mt-2">
+            <ConfirmButton
+              action={marcarRealizada.bind(null, id)}
+              confirmMessage={t("confirmarRealizada")}
+              className="text-court-blue"
+            >
+              {t("marcarRealizada")}
+            </ConfirmButton>
+          </div>
+        )}
       </div>
 
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle className="font-heading uppercase">{t("suaPresenca")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form action={marcarPresenca.bind(null, id)} className="flex gap-2">
-            {rsvp.map((opcao) => (
-              <Button
-                key={opcao.status}
-                type="submit"
-                name="status"
-                value={opcao.status}
-                variant={meuStatus === opcao.status ? "default" : "outline"}
-                className={meuStatus === opcao.status ? opcao.ativo : ""}
-              >
-                {opcao.label}
-              </Button>
+      {sessao.status === "agendada" && (
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="font-heading uppercase">{t("suaPresenca")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form action={marcarPresenca.bind(null, id)} className="flex gap-2">
+              {rsvp.map((opcao) => (
+                <Button
+                  key={opcao.status}
+                  type="submit"
+                  name="status"
+                  value={opcao.status}
+                  variant={meuStatus === opcao.status ? "default" : "outline"}
+                  className={meuStatus === opcao.status ? opcao.ativo : ""}
+                >
+                  {opcao.label}
+                </Button>
+              ))}
+            </form>
+          </CardContent>
+        </Card>
+      )}
+
+      {avaliaveis.length > 0 && (
+        <Card className="mb-6 border-cone-yellow/50">
+          <CardHeader>
+            <CardTitle className="font-heading uppercase">
+              {tAvaliacoes("titulo")}
+            </CardTitle>
+            <CardDescription>{tAvaliacoes("descricao")}</CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-4">
+            {avaliaveis.map((pessoa) => (
+              <div key={pessoa.usuarioId} className="flex items-center gap-3">
+                <Avatar>
+                  <AvatarImage src={pessoa.avatarUrl ?? undefined} alt="" />
+                  <AvatarFallback>
+                    {pessoa.nome.slice(0, 2).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="flex-1 text-sm font-medium">{pessoa.nome}</span>
+                <form
+                  action={avaliarJogador.bind(null, id, pessoa.usuarioId)}
+                  className="flex gap-1"
+                >
+                  {[1, 2, 3, 4, 5].map((nota) => (
+                    <button
+                      key={nota}
+                      type="submit"
+                      name="nota"
+                      value={nota}
+                      aria-label={tAvaliacoes("notaAria", { nota, nome: pessoa.nome })}
+                      className={`text-xl leading-none transition-colors ${
+                        nota <= (minhaNotaPor.get(pessoa.usuarioId) ?? 0)
+                          ? "text-cone-yellow"
+                          : "text-graphite-soft/40 hover:text-cone-yellow/70"
+                      }`}
+                    >
+                      ★
+                    </button>
+                  ))}
+                </form>
+              </div>
             ))}
-          </form>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
 
       {meuStatus === "confirmado_pendente_pagamento" && (
         <Card className="mb-6 border-whistle-orange/50">
