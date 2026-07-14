@@ -44,7 +44,8 @@
     "inicioEmConstrucao": "Logged-in area — under construction",
     "editarPerfil": "Edit profile",
     "meusGrupos": "My groups",
-    "ola": "Hi, {nome}"
+    "ola": "Hi, {nome}",
+    "trocarIdioma": "Mudar para português"
   },
   "Grupos": {
     "titulo": "My groups",
@@ -147,7 +148,8 @@
     "capitao": "Captain",
     "capitaoAleatorio": "Random captain",
     "semCapitao": "No captain",
-    "moverDica": "Drag a player to another team (or tap them, then tap the target team)."
+    "moverDica": "Drag a player to another team (or tap them, then tap the target team).",
+    "sessaoNaoEncontrada": "Match not found."
   },
   "Pagamentos": {
     "titulo": "Payment",
@@ -172,5 +174,18 @@
     "descricao": "Rate whoever played with you from 1 to 5. Only you can see the ratings you gave.",
     "notaAria": "Rate {nome} {nota} out of 5",
     "media": "Average {media} out of 5"
+  },
+  "Erros": {
+    "informeNome": "Enter your name.",
+    "informeNomeGrupo": "Enter the group name.",
+    "conviteInvalido": "Invalid or expired invite.",
+    "informeDataHorario": "Enter date and time.",
+    "grupoNaoEncontrado": "Group not found."
+  },
+  "Push": {
+    "ativar": "Enable notifications",
+    "iosTitulo": "Add Fivea to your Home Screen",
+    "iosTexto": "On iPhone, match notifications only arrive when the app is installed: tap Share, then \"Add to Home Screen\".",
+    "entendi": "Got it"
   }
 }

@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 
 export type PerfilActionState = { error?: string } | undefined;
@@ -16,7 +17,8 @@ export async function completarPerfil(
   const avatarUrl = String(formData.get("avatar_url") ?? "");
 
   if (!nome) {
-    return { error: "Informe seu nome." };
+    const t = await getTranslations({ locale, namespace: "Erros" });
+    return { error: t("informeNome") };
   }
 
   const supabase = await createClient();

@@ -299,7 +299,9 @@ export default async function GrupoDetalhesPage({
                 <AvatarImage src={pessoa.avatarUrl ?? undefined} alt="" />
                 <AvatarFallback>{pessoa.nome.slice(0, 2).toUpperCase()}</AvatarFallback>
               </Avatar>
-              <span className="flex-1 text-sm font-medium">{pessoa.nome}</span>
+              <span className="min-w-0 flex-1 truncate text-sm font-medium">
+                {pessoa.nome}
+              </span>
               <MediaAvaliacao
                 media={medias.get(pessoa.usuarioId) ?? null}
                 label={tAvaliacoes("media", {

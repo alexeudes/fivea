@@ -26,8 +26,23 @@ internacional (pt-BR / en).
   em `PENDENCIAS.md` (local, gitignored).
 - **i18n**: next-intl, locales `pt-BR` (default) e `en`, roteamento por
   `app/[locale]/...`
-- **PWA**: `public/manifest.json` + `public/sw.js` (passthrough, sem cache
-  ainda), ícones gerados a partir do crest em `public/icons/`
+- **PWA**: `public/manifest.json` + `public/sw.js` (sem cache offline ainda;
+  o SW cuida de instalabilidade e dos handlers de `push`/`notificationclick`),
+  ícones gerados a partir do crest em `public/icons/`
+- **Web push**: `@block65/webcrypto-web-push` (WebCrypto puro — funciona no
+  worker do Cloudflare e no Node local; o `web-push` clássico do npm depende
+  de APIs do Node que não existem no worker). Envio em `lib/push.ts`
+  (melhor-esforço, retorna endpoints 404/410 pro chamador limpar), disparado
+  hoje só por `criarSessao`. Subscriptions em `push_subscriptions` (uma por
+  navegador, upsert por `endpoint` via `salvarPushSubscription` em
+  `lib/supabase/push-actions.ts`); leitura pra envio via service_role. Env:
+  `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT`
+  (no `.env.local`; em prod a privada vai como secret do wrangler — **as
+  chaves de prod devem ser outras**, gere um par novo). Sem chaves, o envio
+  vira no-op. UI: sino em `components/fivea/push-bell.tsx` (pede permissão/
+  assina) e `ios-install-banner.tsx` (iOS só entrega push com o PWA
+  instalado na tela de início — o banner explica isso e é dispensável via
+  localStorage).
 
 ## Identidade visual
 
@@ -135,6 +150,10 @@ policies — reusar essas funções em vez de duplicar a checagem.
   (sessão `realizada` + avaliador e avaliado confirmados) e recria as
   policies de insert/update de `avaliacoes` com esse gate, incluindo
   `WITH CHECK` no update pra impedir mover uma avaliação pra fora do gate.
+- `007_push_subscriptions.sql` — tabela `push_subscriptions` (endpoint
+  unique + chaves `p256dh`/`auth` do navegador). CRUD só das próprias
+  linhas; envio lê via service_role. Grants vêm dos default privileges
+  da 003.
 
 **Gotcha de RLS + RETURNING:** `insert(...).select(...)` (RETURNING) avalia
 a policy de *select* dentro do próprio INSERT, e funções `stable` como

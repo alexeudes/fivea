@@ -34,9 +34,12 @@ export function SortearForm({ sessaoId, jaSorteado }: { sessaoId: string; jaSort
       </div>
       {state?.error && (
         <FieldError>
-          {state.error === "confirmados_insuficientes"
-            ? t("confirmadosInsuficientes")
-            : state.error}
+          {
+            {
+              confirmados_insuficientes: t("confirmadosInsuficientes"),
+              sessao_nao_encontrada: t("sessaoNaoEncontrada"),
+            }[state.error] ?? state.error
+          }
         </FieldError>
       )}
     </form>

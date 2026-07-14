@@ -219,7 +219,7 @@ export default async function SessaoPage({
             <CardTitle className="font-heading uppercase">{t("suaPresenca")}</CardTitle>
           </CardHeader>
           <CardContent>
-            <form action={marcarPresenca.bind(null, id)} className="flex gap-2">
+            <form action={marcarPresenca.bind(null, id)} className="flex flex-wrap gap-2">
               {rsvp.map((opcao) => (
                 <Button
                   key={opcao.status}
@@ -254,7 +254,9 @@ export default async function SessaoPage({
                     {pessoa.nome.slice(0, 2).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
-                <span className="flex-1 text-sm font-medium">{pessoa.nome}</span>
+                <span className="min-w-0 flex-1 truncate text-sm font-medium">
+                  {pessoa.nome}
+                </span>
                 <form
                   action={avaliarJogador.bind(null, id, pessoa.usuarioId)}
                   className="flex gap-1"
@@ -372,7 +374,9 @@ export default async function SessaoPage({
                   <AvatarImage src={pessoa.avatarUrl ?? undefined} alt="" />
                   <AvatarFallback>{pessoa.nome.slice(0, 2).toUpperCase()}</AvatarFallback>
                 </Avatar>
-                <span className="flex-1 text-sm font-medium">{pessoa.nome}</span>
+                <span className="min-w-0 flex-1 truncate text-sm font-medium">
+                  {pessoa.nome}
+                </span>
                 {status ? (
                   <Badge className={CHIP[status]}>{t(CHIP_LABEL[status])}</Badge>
                 ) : (

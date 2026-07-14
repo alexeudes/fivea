@@ -1,13 +1,15 @@
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Logo } from "@/components/fivea/logo";
+import { LocaleSwitcher } from "@/components/fivea/locale-switcher";
 import { Button } from "@/components/ui/button";
 
 export default function Home() {
   const t = useTranslations("HomePage");
 
   return (
-    <main className="flex flex-1 flex-col bg-ink-navy text-chalk">
+    <main className="relative flex flex-1 flex-col bg-ink-navy text-chalk">
+      <LocaleSwitcher className="absolute right-4 top-4 text-chalk/60 hover:text-chalk" />
       <section className="mx-auto flex w-full max-w-3xl flex-1 flex-col items-center gap-10 px-6 py-20 text-center sm:py-28">
         <Logo size={144} className="h-28 w-28 rounded-3xl sm:h-36 sm:w-36" />
 

@@ -1,5 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
+import { AppHeader } from "@/components/fivea/app-header";
 import { NotificacoesToast } from "@/components/fivea/notificacoes-toast";
+import { IosInstallBanner } from "@/components/fivea/ios-install-banner";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -18,7 +20,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <>
+      <AppHeader />
       {children}
+      <IosInstallBanner />
       {!!notificacoes?.length && <NotificacoesToast notificacoes={notificacoes} />}
     </>
   );

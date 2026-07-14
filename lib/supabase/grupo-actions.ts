@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { proximasSessoes } from "@/lib/sessoes";
@@ -34,7 +35,10 @@ export async function criarGrupo(
   formData: FormData,
 ): Promise<GrupoActionState> {
   const grupo = grupoFromForm(formData);
-  if (!grupo.nome) return { error: "Informe o nome do grupo." };
+  if (!grupo.nome) {
+    const t = await getTranslations({ locale, namespace: "Erros" });
+    return { error: t("informeNomeGrupo") };
+  }
 
   const supabase = await createClient();
   const {
@@ -77,7 +81,10 @@ export async function editarGrupo(
   formData: FormData,
 ): Promise<GrupoActionState> {
   const grupo = grupoFromForm(formData);
-  if (!grupo.nome) return { error: "Informe o nome do grupo." };
+  if (!grupo.nome) {
+    const t = await getTranslations({ locale, namespace: "Erros" });
+    return { error: t("informeNomeGrupo") };
+  }
 
   const supabase = await createClient();
   const { error } = await supabase
@@ -115,7 +122,10 @@ export async function entrarNoGrupo(
   );
   if (lookupError) return { error: lookupError.message };
   const grupo = grupos?.[0];
-  if (!grupo) return { error: "Convite inválido ou expirado." };
+  if (!grupo) {
+    const t = await getTranslations({ locale, namespace: "Erros" });
+    return { error: t("conviteInvalido") };
+  }
 
   if (!grupo.ja_membro) {
     const { error } = await supabase.from("membros_grupo").insert({

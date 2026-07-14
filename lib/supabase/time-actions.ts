@@ -21,7 +21,7 @@ export async function sortearTimes(
     .select("grupo_id")
     .eq("id", sessaoId)
     .single();
-  if (!sessao) return { error: "Sessão não encontrada." };
+  if (!sessao) return { error: "sessao_nao_encontrada" };
 
   const { data: presencas } = await supabase
     .from("presencas")

@@ -35,7 +35,9 @@ export function PagarPix({
     });
     const dados = await resposta.json().catch(() => ({}));
     if (!resposta.ok) {
-      setErro(dados.error ?? t("erro"));
+      // mensagem do servidor só no console — pro usuário, erro genérico traduzido
+      console.error("pagamento:", dados.error);
+      setErro(t("erro"));
     } else {
       setBrCode(dados.br_code);
       setQrBase64(dados.br_code_base64 ?? null);

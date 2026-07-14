@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { enviarPush } from "@/lib/push";
 
 export type SessaoActionState = { error?: string } | undefined;
 
@@ -75,7 +77,8 @@ export async function criarSessao(
   const data = String(formData.get("data") ?? "");
   const horario = String(formData.get("horario") ?? "");
   const local = String(formData.get("local") ?? "").trim() || null;
-  if (!data || !horario) return { error: "Informe data e horário." };
+  const tErros = await getTranslations({ locale, namespace: "Erros" });
+  if (!data || !horario) return { error: tErros("informeDataHorario") };
 
   const supabase = await createClient();
   const t = await getTranslations({ locale, namespace: "Sessoes" });
@@ -85,7 +88,7 @@ export async function criarSessao(
     .select("nome")
     .eq("id", grupoId)
     .single();
-  if (!grupo) return { error: "Grupo não encontrado." };
+  if (!grupo) return { error: tErros("grupoNaoEncontrado") };
 
   // id gerado no app (sem RETURNING) — ver gotcha de RLS no CLAUDE.md
   const id = crypto.randomUUID();
@@ -110,15 +113,34 @@ export async function criarSessao(
 
   if (membros?.length) {
     // ponytail: título renderizado no locale do organizador; por-destinatário
-    // fica pro milestone de push real
+    // exigiria guardar locale preferido no perfil
+    const titulo = t("notificacaoNovaSessao", { grupo: grupo.nome });
     await supabase.from("notificacoes").insert(
       membros.map((m) => ({
         usuario_id: m.usuario_id,
         grupo_id: grupoId,
-        titulo: t("notificacaoNovaSessao", { grupo: grupo.nome }),
+        titulo,
         link: `/sessoes/${id}`,
       })),
     );
+
+    // web push (melhor-esforço): subscriptions dos membros via service_role
+    const admin = createAdminClient();
+    const { data: subs } = await admin
+      .from("push_subscriptions")
+      .select("endpoint, p256dh, auth")
+      .in(
+        "usuario_id",
+        membros.map((m) => m.usuario_id),
+      );
+    if (subs?.length) {
+      const mortos = await enviarPush(subs, {
+        title: titulo,
+        link: `/${locale}/sessoes/${id}`,
+      });
+      if (mortos.length)
+        await admin.from("push_subscriptions").delete().in("endpoint", mortos);
+    }
   }
 
   redirect(`/${locale}/sessoes/${id}`);

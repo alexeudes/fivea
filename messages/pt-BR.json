@@ -44,7 +44,8 @@
     "inicioEmConstrucao": "Área logada — em construção",
     "editarPerfil": "Editar perfil",
     "meusGrupos": "Meus grupos",
-    "ola": "Olá, {nome}"
+    "ola": "Olá, {nome}",
+    "trocarIdioma": "Switch to English"
   },
   "Grupos": {
     "titulo": "Meus grupos",
@@ -147,7 +148,8 @@
     "capitao": "Capitão",
     "capitaoAleatorio": "Capitão aleatório",
     "semCapitao": "Sem capitão",
-    "moverDica": "Arraste um jogador pra outro time (ou toque nele e depois no time de destino)."
+    "moverDica": "Arraste um jogador pra outro time (ou toque nele e depois no time de destino).",
+    "sessaoNaoEncontrada": "Sessão não encontrada."
   },
   "Pagamentos": {
     "titulo": "Pagamento",
@@ -172,5 +174,18 @@
     "descricao": "Dê uma nota de 1 a 5 pra quem jogou com você. Só você vê as notas que deu.",
     "notaAria": "Dar nota {nota} para {nome}",
     "media": "Média {media} de 5"
+  },
+  "Erros": {
+    "informeNome": "Informe seu nome.",
+    "informeNomeGrupo": "Informe o nome do grupo.",
+    "conviteInvalido": "Convite inválido ou expirado.",
+    "informeDataHorario": "Informe data e horário.",
+    "grupoNaoEncontrado": "Grupo não encontrado."
+  },
+  "Push": {
+    "ativar": "Ativar notificações",
+    "iosTitulo": "Instale o Fivea na tela de início",
+    "iosTexto": "No iPhone, as notificações de novas peladas só chegam com o app instalado: toque em Compartilhar e depois em \"Adicionar à Tela de Início\".",
+    "entendi": "Entendi"
   }
 }
